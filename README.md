@@ -13,7 +13,7 @@ At the start of a poly semester, you would buy books for modules you are taking 
 
 - Create an endpoint in the **backend** 
 
-  - to upload images of **jpg extension and file size below 1 MB**.
+  - to upload images of **jpg extension and file size below 1 MB**
   
   - to **view own listed products**
   
