@@ -9,9 +9,9 @@ At the start of a poly semester, you would buy books for modules you are taking 
 
 - Create a **new MySQL database** with the **necessary tables with correct use of primary and foreign key constraints**
 
-- Create an **Express server that consume data from MySQL using the MySQL library**.
+- Create an **Express server that consume data from MySQL using the MySQL library**
 
-- Create an endpoint 
+- Create an endpoint in the **backend** 
 
   - to upload images of **jpg extension and file size below 1 MB**.
   
@@ -25,7 +25,7 @@ At the start of a poly semester, you would buy books for modules you are taking 
   
   -	to **make offer for own product**
   
-- Create a front-end using an **open-source framework** with **persistent login and logout**
+- Create a **frontend** using an **open-source framework** with **persistent login and logout**
 
 ## Installation 
 
@@ -33,7 +33,7 @@ At the start of a poly semester, you would buy books for modules you are taking 
 
 2. Run `npm init` to create new `package.json` files, `npm install` to update and create `node_modules` folder. 
 
-3. Run `npm install --save axios`, `npm install --save bcrypt@3.2.0`, `npm install --save cors`, `npm install --save dotenv`, `npm install --save jsonwebtoken` to install the `axios`, `bcrypt`, `cors`, `dotenv` and `jsonwebtoken` packages respectively. 
+3. Run `npm install --save axios`, `npm install --save bcrypt@3.2.0`, `npm install --save cors`, `npm install --save dotenv`, `npm install --save jsonwebtoken` to install the **axios, bcrypt, cors, dotenv and jsonwebtoken packages** respectively. 
     
 4. In VS Code's terminal, type `npm run start-dev` and `nodemon index.js` to run the **back-end** and **front-end** scripts respectively.
 
