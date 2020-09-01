@@ -49,6 +49,6 @@ At the start of a poly semester, you would buy books for modules you are taking 
 
 ## Frontend Set-up
 
-1. Enter `localhost:3001/` in the browser to display the **index page of SNAPSELL**.
+1. Enter `https://localhost:3001/` in the browser to display the **index page of SNAPSELL**.
 
 2. The URL of the other pages are indicated under `CA2 > front-end > index.js`. 
