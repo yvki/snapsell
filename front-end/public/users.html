@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>SNAPSELL</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/png" sizes="16x16" href="../public/image/favicon-16x16.png">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <style>
+        body,
+        h1 {
+            font-family: "Raleway", sans-serif
+        }
+
+        body,
+        html {
+            height: 100%;
+            line-height: 1.8;
+        }
+
+        /* Full height image header */
+        .w3-bar .w3-button {
+            padding: 16px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <p></p>
+        <form id='search' class="form-inline">
+            <input id="value" class="form-control" type="search" placeholder="Search" aria-label="Search">
+            <button class="btn btn-primary" type="submit">Search</button>
+        </form>
+        <div id="posts">
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"
+        integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script>
+        // API url
+        const baseUrl = "http://localhost:3000";
+        // cannot be hardcoded <- add login first
+        const loggedInUserID = localStorage.getItem("loggedInUserID");
+        //-----------------------------
+        //         Get Listings
+        //-----------------------------
+        // back tick is used for a string to replace variables with values <- difficult to debug
+        // http://localhost:3000/listings/ as per get listings request in Postman
+        var postUrl = `${baseUrl}/listings/`;
+        console.log(postUrl);
+        axios.get(postUrl)
+            .then(function (response) {
+                console.log(response);
+                // the entire response that we see in Postman is GET response.data here
+                // the 'response' variable here refers to the response from AJAX call
+                const posts = response.data;
+                posts.forEach((post) => {
+                    //console.log(post);
+                    const postHtml = `
+                    <div class="card mt-4">
+                    <div class="card-body">
+                    <h1 class="card-title text-center">${post.title}</h1>
+                    <p class="text-center">${post.description}</p>
+                    </div>
+                    <p class="price text-center">${"$" + post.price}</p>
+                    <div class="card-footer text-muted text-center">
+                    Time posted: ${post.created_at} 
+                    </div>
+                    </div>
+                `;
+                    $("#posts").append(postHtml);
+                });
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
+        //-----------------------------
+        //           Search 
+        //-----------------------------
+        $("#search").submit((event) => {
+            // prevent window refresh
+            event.preventDefault();
+            // validate the values entered
+            const val = $("#value").val()
+            // consider all values to be of lowercase
+            const value = val.toLowerCase();
+            $('.card-title').each(function () {
+                if ($(this).html().toLowerCase().includes(value)) {
+                    //if match
+                    $(this).parentsUntil("#posts").show();
+                } else {
+                    //if hidden
+                    $(this).parentsUntil("#posts").each(function () {
+                        $(this).hide();
+                    })
+                }
+            })
+        })
+    </script>
+</body>
+
+</html>

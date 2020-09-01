@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>SNAPSELL</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+</head>
+
+<body>
+    <div class="container">
+        <!-- Navbar -->
+        <nav class="nav">
+            <a class="nav-link" href="/">Home</a>
+            <a class="nav-link" href="/listings/">Search Items</a>
+            <a class="nav-link" id="update" href="/user/profile/">Update Profile</a>
+            <a class="nav-link" id="delete" href="/login/">Delete Account</a>
+            <a class="nav-link" id="logout" href="/login/">Logout</a>
+        </nav>
+        <!-- Selling Form :: Enter details and declare listing for sale -->
+        <div class="row" style="margin-top: 2rem;">
+            <div class="col-md-8 col-xs-12">
+                <h1>Item to Sell</h1>
+                <form id="create-post-form" class="mt-2"
+                    style="border: 1px solid rgb(221, 220, 220); padding: 10px;border-radius: 5px">
+                    <div class="form-group">
+                        <label for="title">Title</label>
+                        <input type="text" class="form-control" id="title">
+                    </div>
+                    <div class="form-group">
+                        <label for="description">Description</label>
+                        <input type="text" class="form-control" id="description">
+                    </div>
+                    <div class="form-group">
+                        <label for="price">Price</label>
+                        <input type="text" class="form-control" id="price">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Create Post</button>
+                </form>
+                <p></p>
+                <h1>My Listings</h1>
+                <!-- Search :: Find relevant listings amongst logged in user -->
+                <form id='search' class="form-inline">
+                    <input id="value" class="form-control" type="search" placeholder="Search" aria-label="Search">
+                    <button class="btn btn-primary" type="submit">Search</button>
+                </form>
+                <!-- View all of logged in user's listings -->
+                <div id="posts">
+                </div>
+            </div>
+            <p></p>
+            <!-- Offer :: Re-sell listing at a lower price -->
+            <div class="col-md-4 col-xs-12">
+                <h1>Offers</h1>
+                <ul id="allOffers" class="item-group" style="list-style: none; padding-left: 0;">
+                </ul>
+            </div>
+            <!-- Offer :: View offers made by all users -->
+            <div id="offers">
+            </div>
+
+        </div>
+    </div>
+    <!-- import jquery -->
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"
+        integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+    <!-- import AJAX -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+    <!-- import bootstrap -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
+    <!-- import axios -->
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script>
+        // API url
+        const baseUrl = "http://localhost:3000";
+        // based on login details -> extract the user id from token in local storage -> url won't be hardcoded\
+        // example: when user of id '1' logs in, url for their listings will be http://localhost:3000/users/1/listings
+        //          when user of id '3' logs in, url for their listings will be http://localhost:3000/users/3/listings
+        const loggedInUserID = localStorage.getItem("loggedInUserID");
+
+        //-----------------------------
+        //      Get Users Listings
+        //-----------------------------
+        // back tick is used for a string to replace variables with values <- difficult to debug
+        // http://localhost:3000/users/1/listings/ as per get listings request in Postman (example for loggedInUserID = 1)
+        var postUrl = `${baseUrl}/users/${loggedInUserID}/listings/`;
+        // for checking purposes in command prompt
+        console.log(postUrl);
+        axios.get(postUrl)
+            .then(function (response) {
+                console.log(response);
+                // the entire response that we see in Postman is GET response.data here 
+                // the 'response' variable here refers to the response from AJAX call
+                const posts = response.data;
+                // print out logged in user's listings
+                posts.forEach((post) => {
+                    // console.log(post);
+                    // card format for listings 
+                    const postHtml = `
+                    <div class="card mt-4">
+                    <div class="card-body">
+                    <h1 class="card-title text-center">${post.title}</h1>
+                    <p class="text-center">${post.description}</p>
+                    </div>
+                    <p class="price text-center">${"$" + post.price}</p>
+                    <div class="card-footer text-muted text-center">
+                    Time posted: ${post.created_at} 
+                    </div>
+                    <button id="offer" class="btn btn-primary" onclick="offer(${post.id})" type="submit">Offer</button>
+                    </div>
+                `;
+                    $("#posts").append(postHtml);
+                });
+            })
+            // print out the error in the command prompt for checking purposes 
+            .catch(function (error) {
+                console.log(error);
+            });
+
+        //-----------------------------
+        //        Add Listings
+        //-----------------------------
+        $("#create-post-form").submit((event) => {
+            //prevents the page from refreshing
+            event.preventDefault();
+            // validate title, description and price 
+            const title = $("#title").val();
+            const description = $("#description").val();
+            const price = $("#price").val();
+            // equates the logged in user id to id of user who posts a new listing
+            const fk_poster_id = loggedInUserID;
+            // store title, description, price and poster id as variables under request body
+            const requestBody = {
+                title: title,
+                description: description,
+                price: price,
+                fk_poster_id: fk_poster_id
+            };
+            // http://localhost:3000/listings/ as per add a listing request in Postman
+            axios.post(`${baseUrl}/listings/`, requestBody)
+                .then((response) => {
+                    // reset form value
+                    $("#create-post-form-body").val("");
+                    // fetch the post with the returned postID
+                    // http://localhost:3000/listings/2 <- example of fetching listings posted by logged in user of id 2
+                    axios.get(`${baseUrl}/listings/${fk_poster_id}`)
+                        .then((response) => {
+                            // the entire response that we see in Postman is POST response.data here
+                            // the 'response' variable here refers to the response from AJAX call
+                            const post = response.data;
+                            // card format for listings 
+                            const postHtml = `
+                                 <div class="card mt-4">
+                                 <img src="img/${post.img}" alt="${post.title}">
+                                 <div class="card-body">
+                                 <h1 class="card-title text-center">${post.title}</h1>
+                                 <p class="text-center">${post.description}</p>
+                                 </div>
+                                 <p class="price text-center">${"$" + post.price}</p>
+                                 <div class="card-footer text-muted text-center">
+                                 Time posted: ${post.created_at} <br> Posted by: ${post.username}
+                                 </div>
+                                 <button id="offer" class="btn btn-primary" onclick="offer(${post.id})" type="submit">Offer</button>
+                                 </div>
+                                `;
+                            $("#posts").prepend(postHtml);
+                        })
+                        // print out the error in the command prompt for checking purposes 
+                        .catch((error) => {
+                            console.log(error);
+                        });
+                })
+                // print out the error in the command prompt for checking purposes
+                .catch((error) => {
+                    console.log(error);
+                });
+        });
+
+        //-----------------------------
+        //         Get Offers
+        //-----------------------------
+        // http://localhost:3000/offers/ link as per get offers request in Postman
+        var postUrl = `${baseUrl}/offers/`;
+        // print out the url for checking purposes in the command prompt 
+        console.log(postUrl);
+        axios.get(postUrl).then((response) => {
+            // the entire response that we see in Postman is GET response.data here
+            // the 'response' variable here refers to the response from AJAX call
+            const posts = response.data;
+            // card format for offers
+            posts.forEach((post) => {
+                $("#allOffers").append(`
+          <li class="list-group-item">
+            <font color="blue">
+                <p><b>${post.title}</b> now on sale at <b>$${post.offer}</b></p>
+                <p>Posted by <b>${post.username}</b></p>  
+            </font>
+          </li>
+          `);
+            });
+        })
+            // print out the error in the command prompt for checking purposes 
+            .catch((error) => {
+                console.log(error);
+            })
+
+        //-----------------------------
+        //         Add Offer 
+        //-----------------------------
+        function offer(id) {
+            // ask user to enter a lower price for the listing to be sold 
+            const offer = prompt("Enter a price to offer: ");
+            // listing id foreign key equates to offer id 
+            const fk_listing_id = id;
+            // logged in user id equates to creator of offer id 
+            const fk_offeror_id = loggedInUserID;
+            // stores offer, listing id and offeror id as variables under request body
+            const requestBody = {
+                offer: offer,
+                fk_listing_id: fk_listing_id,
+                fk_offeror_id: fk_offeror_id
+            };
+            // http://localhost:3000/listings/1/offers link as per add an offer request in Postman (example for offer for listing of id of 1) 
+            axios.post(`${baseUrl}/listings/${fk_listing_id}/offers`, requestBody).then((response) => {
+                alert("Offer successfully created!"); // appear within a window alert box
+            })
+        }
+
+        //-----------------------------
+        //          Search 
+        //-----------------------------
+        $("#search").submit((event) => {
+            // prevent window refresh
+            event.preventDefault();
+            // validate the values entered
+            const val = $("#value").val()
+            // consider all values entered to be of lowercase
+            const value = val.toLowerCase();
+            $('.card-title').each(function () {
+                if ($(this).html().toLowerCase().includes(value)) {
+                    // if listings match with search 
+                    //
+                    $(this).parentsUntil("#posts").show();
+                } else {
+                    //if listings differ from search
+                    $(this).parentsUntil("#posts").each(function () {
+                        // irrelevant listings will be hidden from search 
+                        $(this).hide();
+                    })
+                }
+            })
+        })
+        
+        //-----------------------------
+        //       Delete Account 
+        //-----------------------------
+        $("#delete").click(function () {
+            id = loggedInUserID
+            const requestBody = {
+                id: id
+            }
+            axios.delete(`${baseUrl}/users/${loggedInUserID}`, requestBody)
+                .then((response) => {
+                    const data = {
+                        token: token,
+                        loggedInUserID: loggedInUserID
+                    }
+                    // reset form value
+                    if (data != null) {
+                        var x = alert("Are you sure you want to delete account? ");
+                        if (x) {
+                            window.localStorage.clear();
+                            window.location.assign("/login/");
+                        } else {
+                            return false;
+                        }
+                    } else {
+                        console.log("Error logging out!")
+                    }
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+        });
+
+        //-----------------------------
+        //          Logout 
+        //-----------------------------
+        $("#logout").click(function () {
+            // http:localhost:3000/logout link as per logout request in Postman
+            axios.post(`${baseUrl}/logout`)
+                .then((response) => {
+                    // store username and password under data
+                    const data = {
+                        token: token,
+                        loggedInUserID: loggedInUserID
+                    }
+                    // reset form value
+                    if (data != null) {
+                        // clear local storage
+                        window.localStorage.clear();
+                        // redirects user back to login page
+                        window.location.assign("/login/")
+                        // user remains in their own listings page 
+                    } else {
+                        console.log("Error logging out!")
+                    }
+                })
+                // print out the error in the command prompt 
+                .catch((error) => {
+                    console.log(error);
+                });
+        });
+    </script>
+    <p></p>
+</body>
+
+</html>

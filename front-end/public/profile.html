@@ -1,0 +1,104 @@
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>SNAPSELL</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+</head>
+
+<body>
+    <div class="container">
+        <h1>Update Profile</h1>
+        <!-- Update Form :: user to sign in at login.html -->
+        <form id="Update">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" class="form-control" id="username">
+            </div>
+            <div class="form-group">
+                <label for="profile_pic_url">Profile Pic URL</label>
+                <input type="profile_pic_url" class="form-control" id="password">
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" class="form-control" id="password">
+            </div>
+            <button type="submit" id="Update" class="btn btn-primary">Update</button>
+            <!-- redirect user to product.html -->
+            <a href="/user/listings" class="btn btn-primary">Back to Products</a>
+        </form>
+    </div>
+
+    <!-- import jquery -->
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"
+        integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+    <!-- import AJAX -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+    <!-- import bootstrap -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
+    <!-- import axios -->
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script>
+        // API url
+        const baseUrl = "http://localhost:3000";
+        // based on login details -> extract the user id from token in local storage -> url won't be hardcoded\
+        // example: when user of id '1' logs in, url for their listings will be http://localhost:3000/users/1/listings
+        //          when user of id '3' logs in, url for their listings will be http://localhost:3000/users/3/listings
+        const loggedInUserID = localStorage.getItem("loggedInUserID");
+
+        var userData = localStorage.getItem('userInfo');
+        var userJsonData = JSON.parse(userData);
+
+        var username = userJsonData[0].username;
+        var profile_pic_url = userJsonData[0].profile_pic_url;
+        var password = userJsonData[0].password;
+
+        document.getElementById("username").value = username;
+        document.getElementById("profile_pic_url").value = profile_pic_url;
+        document.getElementById("password").value = password;
+
+        $(document).ready(function () {
+            $("#Update").click(function () {
+                var tmpUName = $('#username').val();
+                var tmpPic = $('#profile_pic_url').val();
+                var tmpPwd = $('#password').val();
+                var tmpToken = localStorage.getItem('token');
+
+                var data = "{\"Username\":\"" + tmpUName + "\", \"Profile Pic URL\":\"" + tmpPic + "\", \"Password\":\"" + tmpPwd + "\"}";
+                console.log(data);
+                //return false;
+
+                $.ajax({
+                    headers: { 'authorization': 'Bearer ' + tmpToken },
+                    url: 'http://localhost:3001/users/' + loggedInUserID,
+                    type: 'PUT',
+                    data: data,
+                    contentType: "application/json; charset=utf-8",
+                    dataType: 'json',
+                    success: function (data, textStatus, xhr) {
+                        if (data != null && data.success) {
+                            $('#msg').html('Record updated successfully!');
+                        } else {
+                            console.log("Error");
+                        }
+                    },
+                    error: function (xhr, textStatus, errorThrown) {
+                        console.log('Error in Operation');
+                        //1. endpoint path is incorrect
+                        //2. supplied token is incorrect
+                        //3. unexplained.. have to dig further
+                    }
+                });
+            });
+        });  
+    </script>
+</body>
+
+</html>

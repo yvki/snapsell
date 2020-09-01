@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>SNAPSELL</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+</head>
+
+<body>
+    <div class="container">
+        <h1>Register</h1>
+        <!-- Register Form -->
+        <form id="register-form">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" class="form-control" id="username">
+            </div>
+            <div class="form-group">
+                <label for="profile_pic_url">Profile Pic URL</label>
+                <input type="text" class="form-control" id="profile_pic_url">
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" class="form-control" id="password">
+            </div>
+            <button type="submit" class="btn btn-primary">Register</button>
+        </form>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"
+        integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script>
+        //-----------------------------
+        //          Register
+        //-----------------------------
+        const baseUrl = "http://localhost:3000";
+        $("#register-form").submit((event) => {
+            // prevent page reload
+            event.preventDefault();
+            // validate username, profile pic url and password 
+            const username = $("#username").val();
+            const profile_pic_url = $("#profile_pic_url").val()
+            const password = $("#password").val();
+            // store username, profile pic url and password under request body
+            const requestBody = {
+                username: username,
+                profile_pic_url: profile_pic_url,
+                password: password
+            };
+            // http://localhost:3000/users/ link as per registration request in Postman
+            axios.post(`${baseUrl}/users/`, requestBody)
+                .then((response) => {
+                    alert("Please login to start SNAPSELLing, " + username)
+                    // redirect users to the login page
+                    window.location.href = "/login/";
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+        });
+    </script>
+</body>
+
+</html>

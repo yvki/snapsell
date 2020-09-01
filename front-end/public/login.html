@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>SNAPSELL</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+</head>
+
+<body>
+    <div class="container">
+        <h1>Login</h1>
+        <p>Don't have an account?</p>
+        <!-- redirect user to register.html -->
+        <a href="/register/" class="btn btn-primary">Register</a>
+        <!-- Sign In Form :: user to sign in at login.html -->
+        <form id="login-form">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" class="form-control" id="username">
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" class="form-control" id="password">
+            </div>
+            <button type="submit" class="btn btn-primary">Login</button>
+        </form>
+    </div>
+    <!-- import jquery -->
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"
+        integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+    <!-- import AJAX -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+    <!-- import bootstrap -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
+    <!--import axios -->
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script>
+        //-----------------------------
+        //           Login
+        //-----------------------------
+        const baseUrl = "http://localhost:3000";
+        $("#login-form").submit((event) => {
+            // prevent page reload
+            event.preventDefault();
+            // validate username and password
+            const username = $("#username").val();
+            const password = $("#password").val();
+            // store username and password as variables under request body
+            const requestBody = {
+                username: username,
+                password: password
+            };
+            // http://localhost:3000/login/ link as per login request in Postman
+            // make use of AXIOS to POST login as per endpoint request in Postman
+            axios.post(`${baseUrl}/login/`, requestBody)
+                .then((response) => {
+                    const token = response.data.token;
+                    const loggedInUserID = response.data.user_id;
+                    // saves username and password hash in local storage
+                    localStorage.setItem("token", token);
+                    localStorage.setItem("loggedInUserID", loggedInUserID);
+                    // redirects logged in user to own listings page
+                    window.location.href = "/user/listings/";
+                })
+                // print out the error in the command prompt for checking purposes
+                .catch((error) => {
+                    console.log(error);
+                    window.alert("Incorrect username and/ or password entered ");
+                });
+        });
+
+        //-----------------------------
+        //          Logout 
+        //-----------------------------
+        const baseurl = "http://localhost:3000";
+        $("#logout").click(function () {
+            // http://localhost:3000/logout link as per logout request in Postman
+            // make use of AXIOS to POST logout as per endpoint request in Postman 
+            axios.post(`${baseUrl}/logout`)
+                .then((response) => {
+                    // store username and password as variables under data
+                    const data = {
+                        token: token,
+                        loggedInUserID: loggedInUserID
+                    }
+                    // reset form value
+                    if (data != null) {
+                        // clear local storage 
+                        window.localStorage.clear();
+                        // redirects user back to login page 
+                        window.location.assign("/login/")
+                    } else {
+                        // user remains at their listings page 
+                        console.log("Error logging out!")
+                    }
+                })
+                // print out the error in the command prompt for checking purposes
+                .catch((error) => {
+                    console.log(error);
+                });
+        });
+    </script>
+</body>
+
+</html>
