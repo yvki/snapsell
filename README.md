@@ -39,7 +39,7 @@ At the start of a poly semester, you would buy books for modules you are taking 
 
 ## Backend Set-up
 
-1. Open **MySQLWorkbench** and click on the **Local instance MYSQL80 connection**. 
+1. Open `MySQLWorkbench` and click on `Local instance MYSQL80 connection`. 
 
 2. Once prompted, enter the password set previously before clicking on **OK**. 
 
@@ -51,4 +51,4 @@ At the start of a poly semester, you would buy books for modules you are taking 
 
 1. Enter `https://localhost:3001/` in the browser to display the **index page of SNAPSELL**.
 
-2. The URL of the other pages are indicated under `CA2 > front-end > index.js`. 
+2. The **URL of the other pages** are indicated under `CA2 > front-end > index.js`. 
