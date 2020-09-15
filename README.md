@@ -45,7 +45,9 @@ At the start of a poly semester, you would buy books for modules you are taking 
 
 3. Create a schema called `bookstore` and **double click** to make it the working database.
 
-4. Open **Postman** to **insert, update, delete or view the JSON outputs according to the endpoints**.
+4. Open up the files with sql extension to create the necessary tables.
+
+5. Open **Postman** to **insert, update, delete or view the JSON outputs according to the endpoints**.
 
 ## Frontend Set-up
 
