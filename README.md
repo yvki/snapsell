@@ -41,11 +41,11 @@ At the start of a poly semester, you would buy books for modules you are taking 
 
 1. Open `MySQLWorkbench` and click on `Local instance MYSQL80 connection`. 
 
-2. Once prompted, enter the password set previously before clicking on **OK**. 
+2. Once prompted, enter the password set previously before clicking on **OK**.  
 
 3. Create a schema called `bookstore` and **double click** to make it the working database.
 
-4. Open up the files with sql extension to create the necessary tables.
+4. Open up the files with sql extension to create the necessary tables, such as `img`, `likes`, `listings`, `offers` and `users`. 
 
 5. Open **Postman** to **insert, update, delete or view the JSON outputs according to the endpoints**.
 
