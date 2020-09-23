@@ -39,7 +39,7 @@ At the start of a poly semester, you would buy books for modules you are taking 
 
 ## Backend Set-up
 
-1. Open `MySQLWorkbench` and click on `Local instance MYSQL80 connection`. If you are new, please setup this connction first.
+1. Open `MySQLWorkbench` and click on `Local instance MYSQL80 connection`. If you are new, please setup this connection first.
 
 2. Once prompted, enter the password set previously before clicking on **OK**.  
 
